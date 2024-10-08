@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root,
+  html {
+    @apply text-t-primary bg-b-primary;
+  }
+
+  .fade-in {
+    @apply opacity-100;
+  }
+}
+
+@layer utilities {
+  @media (max-width: 640px) {
+    * {
+      transition: none !important; /* all transitions desactivated on mobile */
+    }
+  }
+}
