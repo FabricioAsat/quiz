@@ -9,6 +9,7 @@ import (
 func UserRouter(app *fiber.App) {
 
 	app.Get("/:id", user.GetUserById)
-	app.Post("/", user.CreateUser)
+	app.Post("/create", user.CreateUser)
+	app.Post("/login", user.LoginUser)
 
 }
