@@ -1,0 +1,17 @@
+# Dependencias de Go
+/vendor/
+
+# Archivos de compilación
+*.exe
+*.exe~
+*.out
+*.test
+
+# Archivos de configuración de IDE
+.idea/
+*.vscode/
+*.swp
+tmp
+
+# Archivos de entorno
+.env
