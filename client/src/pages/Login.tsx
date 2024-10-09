@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { validateEmail } from "../utils/emailValidator";
+import { loginUser } from "../api/userReq";
+import { toast } from "sonner";
 
 interface IUserValues {
   email: boolean;
@@ -21,10 +23,11 @@ const initialValidValues: IUserValues = {
 export const LoginPage = () => {
   const [inputValues, setInputValues] = useState<TUser>(initiaUserlValues);
   const [isValidValue, setisValidValue] = useState<IUserValues>(initialValidValues);
+  const navigateTo = useNavigate();
 
+  //?: Para los inputs
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setInputValues({ ...inputValues, [e.target.name]: e.target.value });
-
     if (e.target.name === "email") {
       setisValidValue({
         ...isValidValue,
@@ -41,10 +44,22 @@ export const LoginPage = () => {
     });
   }, [inputValues]);
 
-  //TODO:
+  //? Submit
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log("Login", inputValues);
+    if (!isValidValue.email || !isValidValue.password) return;
+
+    async function request() {
+      const response = await loginUser(inputValues);
+      if (!response.status) {
+        toast.error(response.message);
+        return;
+      }
+      toast.success(response.message);
+      localStorage.setItem("current-user", response.data);
+      navigateTo("/");
+    }
+    request();
   }
 
   return (

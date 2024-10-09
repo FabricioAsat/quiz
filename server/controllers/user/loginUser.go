@@ -48,6 +48,6 @@ func LoginUser(c *fiber.Ctx) error {
 	backUser.Password = ""
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Ok",
-		"user":    backUser,
+		"data":    backUser,
 	})
 }
