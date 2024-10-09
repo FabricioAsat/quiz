@@ -76,7 +76,9 @@ func CreateUser(c *fiber.Ctx) error {
 	}
 	//!--------------------------------------------------------------
 
+	user.Password = ""
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "User created successfully",
+		"data":    user,
 	})
 }

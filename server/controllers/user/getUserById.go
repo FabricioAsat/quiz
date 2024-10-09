@@ -28,5 +28,8 @@ func GetUserById(c *fiber.Ctx) error {
 		})
 	}
 	user.Password = ""
-	return c.Status(fiber.StatusOK).JSON(&user)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Ok",
+		"user":    user,
+	})
 }
