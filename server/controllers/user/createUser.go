@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
 )
@@ -68,7 +69,7 @@ func CreateUser(c *fiber.Ctx) error {
 	}
 
 	user.Password = string(hashedPassword)
-	_, err = userCollection.InsertOne(ctx, user)
+	insertedData, err := userCollection.InsertOne(ctx, user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to create user",
@@ -77,6 +78,8 @@ func CreateUser(c *fiber.Ctx) error {
 	//!--------------------------------------------------------------
 
 	user.Password = ""
+	user.ID = insertedData.InsertedID.(primitive.ObjectID)
+
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "User created successfully",
 		"data":    user,

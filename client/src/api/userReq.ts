@@ -3,6 +3,7 @@ import axios, { AxiosError } from "axios";
 export async function registerUser(user: TUser) {
   try {
     const { data } = await axios.post(`${import.meta.env.VITE_API_URL}`, user);
+    console.log(data);
     return {
       message: data.message,
       data: data.data || null,

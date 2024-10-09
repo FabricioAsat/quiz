@@ -59,7 +59,6 @@ export const RegisterPage = () => {
         return;
       }
       toast.success(response.message);
-      localStorage.setItem("user", JSON.stringify(response.data));
       navigateTo("/login");
     }
     request();
