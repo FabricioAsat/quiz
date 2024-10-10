@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func ConnectDB() (*mongo.Client, func()) {
+func ConnectDB(text string) (*mongo.Client, func()) {
 	DDBB_URL := os.Getenv("MONGO_URL")
 
 	client, err := mongo.Connect(context.TODO(), options.Client().
@@ -20,6 +20,7 @@ func ConnectDB() (*mongo.Client, func()) {
 	}
 
 	fmt.Println("Connected to MongoDB")
+	fmt.Println(text)
 
 	disconnect := func() {
 		if err := client.Disconnect(context.TODO()); err != nil {

@@ -13,10 +13,12 @@ func main() {
 	PORT := os.Getenv("PORT")
 	app := fiber.New()
 
+	// Middlewares
 	utils.GlobalMiddlewares(app)
 
 	// Router
 	router.UserRouter(app)
+	router.UserWebSocketsRouter(app)
 
 	app.Listen(PORT)
 }

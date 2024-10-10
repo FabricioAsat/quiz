@@ -23,6 +23,7 @@ const initialValidValues: IUserValues = {
 export const LoginPage = () => {
   const [inputValues, setInputValues] = useState<TUser>(initiaUserlValues);
   const [isValidValue, setisValidValue] = useState<IUserValues>(initialValidValues);
+
   const navigateTo = useNavigate();
 
   //?: Para los inputs
@@ -35,14 +36,6 @@ export const LoginPage = () => {
       });
     }
   }
-
-  //? Se encarga de validar los valores de email y password
-  useEffect(() => {
-    setisValidValue({
-      email: validateEmail(inputValues.email) && inputValues.email.length < 100,
-      password: inputValues.password.length > 5 && inputValues.password.length < 64,
-    });
-  }, [inputValues]);
 
   //? Submit
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -61,6 +54,16 @@ export const LoginPage = () => {
     }
     request();
   }
+
+  //? Se encarga de validar los valores de email y password
+  useEffect(() => {
+    setisValidValue({
+      email: validateEmail(inputValues.email) && inputValues.email.length < 100,
+      password: inputValues.password.length > 5 && inputValues.password.length < 64,
+    });
+  }, [inputValues]);
+
+  
 
   return (
     <section className="flex flex-col items-center justify-start w-full h-full max-w-lg px-2 py-5 md:h-auto md:justify-center md:px-10 md:py-10 rounded-xl animate-fadeIn bg-b-primary/75">

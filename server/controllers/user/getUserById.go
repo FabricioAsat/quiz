@@ -13,7 +13,7 @@ import (
 
 func GetUserById(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(c.Context(), 10*time.Second)
-	db, disconnect := database.ConnectDB()
+	db, disconnect := database.ConnectDB("get by id")
 	defer cancel()
 	defer disconnect()
 

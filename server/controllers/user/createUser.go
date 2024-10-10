@@ -15,7 +15,7 @@ import (
 
 func CreateUser(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(c.Context(), 10*time.Second)
-	db, disconnect := database.ConnectDB()
+	db, disconnect := database.ConnectDB("create")
 	defer cancel()
 	defer disconnect()
 

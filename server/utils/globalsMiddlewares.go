@@ -19,9 +19,9 @@ func GlobalMiddlewares(app *fiber.App) {
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
+			c.Locals("fiberCtx", c)
 			return c.Next()
 		}
 		return fiber.ErrUpgradeRequired
 	})
-
 }

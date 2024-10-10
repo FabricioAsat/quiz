@@ -1,6 +1,7 @@
 package user
 
 import (
+	"quiz-back/constants"
 	"quiz-back/database"
 	"quiz-back/models"
 	"time"
@@ -13,7 +14,7 @@ import (
 
 func LoginUser(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(c.Context(), 10*time.Second)
-	db, disconnect := database.ConnectDB()
+	db, disconnect := database.ConnectDB("login")
 	defer cancel()
 	defer disconnect()
 
@@ -44,6 +45,28 @@ func LoginUser(c *fiber.Ctx) error {
 			"error": "Internal server error",
 		})
 	}
+
+	//!: Incorporación - Busca a los activos y les avisa que el user se ha conectado
+	// ! --------------------------------------------------------------
+	cursor, err := userCollection.Find(ctx, bson.M{"isActive": true})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal server error (find isActive)",
+		})
+	}
+	var activeUsers []models.MUser
+	if err = cursor.All(ctx, &activeUsers); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal server error (find all)",
+		})
+	}
+
+	//*: Manda el mensaje
+	message := backUser.Username + " se ha conectado."
+	for range constants.Clients {
+		constants.Broadcast <- message
+	}
+	// ! -------------------------------------------------------------
 
 	backUser.Password = ""
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{

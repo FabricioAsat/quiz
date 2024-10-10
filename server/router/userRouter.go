@@ -7,9 +7,12 @@ import (
 )
 
 func UserRouter(app *fiber.App) {
+	userR := app.Group("/api/user")
 
-	app.Get("/:id", user.GetUserById)
-	app.Post("/create", user.CreateUser)
-	app.Post("/login", user.LoginUser)
+	userR.Get("/:id", user.GetUserById)
+	userR.Post("/create", user.CreateUser)
+	userR.Post("/login", user.LoginUser)
+
+	// Socket route
 
 }
