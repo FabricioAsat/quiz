@@ -63,19 +63,21 @@ export const UserInfoHome = ({
         </button>
       </section>
 
-      <div className="flex items-center w-full px-5 py-2 mb-3 bg-b-primary">
-        <input
-          type="text"
-          name="browser"
-          id="browser"
-          value={inputValue}
-          onChange={handleOnChange}
-          placeholder="Search player"
-          className="w-full p-2 bg-transparent border-b outline-none placeholder:italic"
-        />
-        <button>
-          <img src={searchImage} alt="Search image" className="w-10 h-10 scale-x-[-1] border-b" />
-        </button>
+      <div className="w-full px-5 py-2 mb-3 gap-x-0 bg-b-primary">
+        <span className="flex items-center w-full border-b">
+          <label htmlFor="browser" className="h-full">
+            <img src={searchImage} alt="Search image" className="w-10 h-10 scale-x-[-1]" />
+          </label>
+          <input
+            type="text"
+            name="browser"
+            id="browser"
+            value={inputValue}
+            onChange={handleOnChange}
+            placeholder="Search player"
+            className="w-full h-full px-2 bg-transparent outline-none placeholder:italic"
+          />
+        </span>
       </div>
 
       {waitingResponse ? (
