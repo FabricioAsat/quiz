@@ -15,9 +15,9 @@ func UserWebSocketsRouter(app *fiber.App) {
 	//* |Goroutine| para enviar mensajes a todos los clientes
 	go func() {
 		for {
-			msg := <-constants.Broadcast
+			user := <-constants.Broadcast
 			for client := range constants.Clients {
-				err := client.WriteMessage(websocket.TextMessage, []byte(msg))
+				err := client.WriteMessage(websocket.TextMessage, []byte(user.Username+" has conected"))
 				if err != nil {
 					client.Close()
 					delete(constants.Clients, client)

@@ -2,6 +2,7 @@ package user
 
 import (
 	"quiz-back/database"
+	"quiz-back/models"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -9,7 +10,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func GetActiveUsers(c *fiber.Ctx) ([]string, error) {
+func GetActiveUsers(c *fiber.Ctx) ([]models.MUser, error) {
 	ctx, cancel := context.WithTimeout(c.Context(), 10*time.Second)
 	db, disconnect := database.ConnectDB("get active users")
 	defer cancel()
@@ -22,15 +23,13 @@ func GetActiveUsers(c *fiber.Ctx) ([]string, error) {
 		return nil, err
 	}
 
-	var activeUsers []string
+	var activeUsers []models.MUser
 	for cursor.Next(ctx) {
-		var user struct {
-			Email string `bson:"email"`
-		}
+		var user models.MUser
 		if err := cursor.Decode(&user); err != nil {
 			return nil, err
 		}
-		activeUsers = append(activeUsers, user.Email)
+		activeUsers = append(activeUsers, user)
 	}
 
 	return activeUsers, nil

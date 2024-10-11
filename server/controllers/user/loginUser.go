@@ -61,10 +61,8 @@ func LoginUser(c *fiber.Ctx) error {
 		})
 	}
 
-	//*: Manda el mensaje
-	message := backUser.Username + " se ha conectado."
 	for range constants.Clients {
-		constants.Broadcast <- message
+		constants.Broadcast <- backUser
 	}
 	// ! -------------------------------------------------------------
 
