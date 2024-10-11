@@ -49,7 +49,7 @@ export const LoginPage = () => {
         return;
       }
       toast.success(response.message);
-      localStorage.setItem("current-user", response.data);
+      localStorage.setItem("current-user", JSON.stringify(response.data));
       navigateTo("/");
     }
     request();
@@ -62,8 +62,6 @@ export const LoginPage = () => {
       password: inputValues.password.length > 5 && inputValues.password.length < 64,
     });
   }, [inputValues]);
-
-  
 
   return (
     <section className="flex flex-col items-center justify-start w-full h-full max-w-lg px-2 py-5 md:h-auto md:justify-center md:px-10 md:py-10 rounded-xl animate-fadeIn bg-b-primary/75">
