@@ -1,7 +1,7 @@
 type TUser = {
-  id: string;
-  username: string;
-  email: string;
-  password: string;
-  isActive: boolean;
+  ID: string;
+  Username: string;
+  Email: string;
+  Password: string;
+  IsActive: boolean;
 };

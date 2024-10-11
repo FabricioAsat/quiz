@@ -1,5 +1,5 @@
 type TApiResponse = {
-  success: boolean;
+  status: boolean;
   message: string;
   data: unknown;
 };

@@ -10,11 +10,11 @@ interface IUserValues {
   password: boolean;
 }
 const initiaUserlValues: TUser = {
-  id: "",
-  username: "",
-  email: "",
-  password: "",
-  isActive: false,
+  ID: "",
+  Username: "",
+  Email: "",
+  Password: "",
+  IsActive: false,
 };
 const initialValidValues: IUserValues = {
   username: false,
@@ -30,7 +30,6 @@ export const RegisterPage = () => {
   //?: Para los inputs
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setInputValues({ ...inputValues, [e.target.name]: e.target.value });
-
     if (e.target.name === "email") {
       setisValidValue({
         ...isValidValue,
@@ -42,9 +41,9 @@ export const RegisterPage = () => {
   //? Se encarga de validar los valores de username, email y password
   useEffect(() => {
     setisValidValue({
-      email: validateEmail(inputValues.email) && inputValues.email.length < 100,
-      password: inputValues.password.length > 5 && inputValues.password.length < 64,
-      username: inputValues.username.length < 40 && inputValues.username.length > 1,
+      email: validateEmail(inputValues.Email) && inputValues.Email.length < 100,
+      password: inputValues.Password.length > 5 && inputValues.Password.length < 64,
+      username: inputValues.Username.length < 40 && inputValues.Username.length > 1,
     });
   }, [inputValues]);
 
@@ -73,7 +72,7 @@ export const RegisterPage = () => {
       </span>
       <form onSubmit={handleSubmit} className="flex flex-col w-full pt-10 mx-auto gap-y-6">
         <span className="flex flex-col">
-          <label htmlFor="username" className="mb-3 font-bold">
+          <label htmlFor="Username" className="mb-3 font-bold">
             Username{" "}
             <b
               className={`transition-colors duration-500 ${isValidValue.username ? "text-green-500" : "text-red-500"}`}
@@ -84,14 +83,14 @@ export const RegisterPage = () => {
           <input
             type="text"
             required
-            value={inputValues?.username || ""}
+            value={inputValues?.Username || ""}
             autoComplete="off"
-            id="username"
-            name="username"
+            id="Username"
+            name="Username"
             onChange={handleChange}
             placeholder="Introduce your username (40 ch. max)"
             className={`px-3 py-2 rounded-md outline-none border-2 bg-t-primary/10 focus:bg-t-primary/15 placeholder:italic transition-colors duration-500 ${
-              inputValues?.username.length === 0
+              inputValues?.Username.length === 0
                 ? "border-transparent"
                 : isValidValue.username
                 ? "border-l-green-500 border-transparent"
@@ -101,7 +100,7 @@ export const RegisterPage = () => {
         </span>
 
         <span className="flex flex-col">
-          <label htmlFor="email" className="mb-3 font-bold">
+          <label htmlFor="Email" className="mb-3 font-bold">
             Email{" "}
             <b className={`transition-colors duration-500 ${isValidValue.email ? "text-green-500" : "text-red-500"}`}>
               *
@@ -110,14 +109,14 @@ export const RegisterPage = () => {
           <input
             type="email"
             required
-            value={inputValues?.email || ""}
+            value={inputValues?.Email || ""}
             autoComplete="off"
-            id="email"
-            name="email"
+            id="Email"
+            name="Email"
             onChange={handleChange}
             placeholder="Introduce your email"
             className={`px-3 py-2 rounded-md outline-none border-2 bg-t-primary/10 focus:bg-t-primary/15 placeholder:italic transition-colors duration-500 ${
-              inputValues?.email.length === 0
+              inputValues?.Email.length === 0
                 ? "border-transparent"
                 : isValidValue.email
                 ? "border-l-green-500 border-transparent"
@@ -127,7 +126,7 @@ export const RegisterPage = () => {
         </span>
 
         <span className="flex flex-col">
-          <label htmlFor="password" className="mb-3 font-bold">
+          <label htmlFor="Password" className="mb-3 font-bold">
             Password{" "}
             <b
               className={`transition-colors duration-500 ${isValidValue.password ? "text-green-500" : "text-red-500"}`}
@@ -138,14 +137,14 @@ export const RegisterPage = () => {
           <input
             type="password"
             required
-            value={inputValues?.password || ""}
+            value={inputValues?.Password || ""}
             autoComplete="off"
-            id="password"
-            name="password"
+            id="Password"
+            name="Password"
             onChange={handleChange}
             placeholder="Introduce tu contraseña"
             className={`px-3 py-2 rounded-md outline-none border-2 bg-t-primary/10 focus:bg-t-primary/15 placeholder:italic transition-colors duration-500 ${
-              inputValues?.password.length === 0
+              inputValues?.Password.length === 0
                 ? "border-transparent"
                 : isValidValue.password
                 ? "border-l-green-500 border-transparent"

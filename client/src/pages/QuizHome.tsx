@@ -4,11 +4,11 @@ import { toast } from "sonner";
 import { UserInfoHome } from "../components/UserInfoHome";
 
 const initialUserInfo: TUser = {
-  id: "",
-  username: "",
-  email: "",
-  password: "",
-  isActive: false,
+  ID: "",
+  Username: "",
+  Email: "",
+  Password: "",
+  IsActive: false,
 };
 
 export const QuizHome = () => {
@@ -21,15 +21,7 @@ export const QuizHome = () => {
   const [messageWS, setMessageWS] = useState("");
   useEffect(() => {
     if (!localStorage.getItem("current-user")) navigateTo("/login");
-
-    const auxUser = JSON.parse(localStorage.getItem("current-user")!);
-    setCurrentUser({
-      email: auxUser.Email,
-      username: auxUser.Username,
-      id: auxUser.ID,
-      password: auxUser.Password,
-      isActive: auxUser.IsActive,
-    });
+    setCurrentUser(JSON.parse(localStorage.getItem("current-user")!));
 
     const socket = new WebSocket("ws://localhost:3000/ws");
 
