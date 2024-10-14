@@ -13,7 +13,7 @@ const initialUserInfo: TUser = {
 
 export const QuizHome = () => {
   const [currentUser, setCurrentUser] = useState<TUser>(initialUserInfo);
-  const [showUserInfo, setShowUserInfo] = useState(true);
+  const [showUserInfo, setShowUserInfo] = useState(false);
 
   const navigateTo = useNavigate();
 
@@ -43,7 +43,7 @@ export const QuizHome = () => {
   return (
     <section className="flex w-screen h-screen">
       <div
-        className={`fixed top-0 w-full h-full bg-b-primary/50 sm:max-w-96 sm:static ${
+        className={`fixed top-0 w-full h-full bg-b-primary/85 sm:bg-b-primary/50 sm:max-w-96 sm:static ${
           showUserInfo ? "left-0" : "-left-full sm:left-0"
         }`}
       >
