@@ -7,7 +7,7 @@ import refreshImage from "../assets/svg/refresh.svg";
 import logoutImage from "../assets/svg/logout.svg";
 
 import { useEffect, useState } from "react";
-import { getActiveUsers } from "../api/userReq";
+import { getActiveUsers, logoutUser } from "../api/userReq";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -24,7 +24,9 @@ export const UserInfoHome = ({
   const [filterUsers, setFilterUsers] = useState<TUser[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [waitingResponse, setwaitingResponse] = useState(true);
-  const [refresh, setRefresh] = useState(false);
+  const [isRefresh, setIsRefresh] = useState(false);
+  const [isLogout, setIsLogout] = useState(false);
+
   const navigateTo = useNavigate();
 
   // Handlers
@@ -36,9 +38,20 @@ export const UserInfoHome = ({
   }
 
   function handleLogout() {
-    localStorage.removeItem("current-user");
-    navigateTo("/login");
-    // TODO - implementar isActive false en backend
+    if (!currentUser.ID) return;
+    setIsLogout(true);
+    async function request() {
+      const response = await logoutUser(currentUser.ID);
+      if (!response.status) {
+        toast.error(response.message);
+        setIsLogout(false);
+        return;
+      }
+      localStorage.removeItem("current-user");
+      setIsLogout(false);
+      navigateTo("/login");
+    }
+    request();
   }
 
   // Effects
@@ -50,24 +63,26 @@ export const UserInfoHome = ({
       setwaitingResponse(false);
       if (!response.status) {
         toast.error(response.message);
-        setRefresh(false);
+        setIsRefresh(false);
         return;
       }
       const auxUsers = response.data as TUser[];
       const filterCurrentUser = auxUsers.filter((user: TUser) => user.ID !== currentUser.ID);
       setAllUsersActives(filterCurrentUser);
       setFilterUsers(filterCurrentUser);
-      setRefresh(false);
+      setIsRefresh(false);
     }
     request();
-  }, [currentUser, refresh]);
+  }, [currentUser, isRefresh]);
 
   return (
     <div className="flex flex-col items-center h-full max-h-screen">
       <section className="flex items-center w-full py-5 pl-5 pr-2 bg-b-primary">
         <img src={incognitoImage} alt="User image" className="w-10 h-10" />
         <span className="flex flex-col items-start justify-center w-full h-full pl-3">
-          <h3 className="font-bold truncate">{currentUser.Username}</h3>
+          <h3 className="font-bold truncate">
+            {currentUser.Username} <small className="italic text-t-primary/40">(you)</small>
+          </h3>
           <i className="text-xs truncate text-t-primary/50">{currentUser.ID}</i>
         </span>
         <button
@@ -97,14 +112,18 @@ export const UserInfoHome = ({
         </span>
         <div className="flex items-center justify-end pt-2 gap-x-5">
           <button
-            disabled={refresh}
-            onClick={() => setRefresh(true)}
+            disabled={isRefresh}
+            onClick={() => setIsRefresh(true)}
             className="flex items-center px-3 py-1 gap-x-1 disabled:brightness-50 disabled:animate-pulse"
           >
             <img src={refreshImage} alt="Refresh image" className="w-5 h-5" />
             <p className="text-sm font-semibold">Refresh</p>
           </button>
-          <button onClick={handleLogout} className="flex items-center px-3 py-1 gap-x-1">
+          <button
+            disabled={isLogout}
+            onClick={handleLogout}
+            className="flex items-center px-3 py-1 gap-x-1 disabled:brightness-50 disabled:animate-pulse"
+          >
             <img src={logoutImage} alt="Logout image" className="w-5 h-5" />
             <p className="text-sm font-semibold">Logout</p>
           </button>

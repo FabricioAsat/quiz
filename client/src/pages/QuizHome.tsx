@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { UserInfoHome } from "../components/UserInfoHome";
+import { NotPlaying } from "../components/NotPlaying";
 
 const initialUserInfo: TUser = {
   ID: "",
@@ -50,9 +51,7 @@ export const QuizHome = () => {
         <UserInfoHome currentUser={currentUser} setShowUserInfo={setShowUserInfo} showUserInfo={showUserInfo} />
       </div>
 
-      <div className="flex items-center justify-center w-full">
-        <h2 className="text-3xl font-bold text-center">El juego irá aquí</h2>
-      </div>
+      <NotPlaying />
     </section>
   );
 };

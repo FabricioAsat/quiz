@@ -9,11 +9,11 @@ interface IUserValues {
   password: boolean;
 }
 const initiaUserlValues: TUser = {
-  id: "",
-  username: "",
-  email: "",
-  password: "",
-  isActive: false,
+  ID: "",
+  Username: "",
+  Email: "",
+  Password: "",
+  IsActive: false,
 };
 const initialValidValues: IUserValues = {
   email: false,
@@ -48,7 +48,6 @@ export const LoginPage = () => {
         toast.error(response.message);
         return;
       }
-      toast.success(response.message);
       localStorage.setItem("current-user", JSON.stringify(response.data));
       navigateTo("/");
     }
@@ -58,13 +57,13 @@ export const LoginPage = () => {
   //? Se encarga de validar los valores de email y password
   useEffect(() => {
     setisValidValue({
-      email: validateEmail(inputValues.email) && inputValues.email.length < 100,
-      password: inputValues.password.length > 5 && inputValues.password.length < 64,
+      email: validateEmail(inputValues.Email) && inputValues.Email.length < 100,
+      password: inputValues.Password.length > 5 && inputValues.Password.length < 64,
     });
   }, [inputValues]);
 
   return (
-    <section className="flex flex-col items-center justify-start w-full h-full max-w-lg px-2 py-5 md:h-auto md:justify-center md:px-10 md:py-10 rounded-xl animate-fadeIn bg-b-primary/75">
+    <section className="flex flex-col items-center justify-start w-full h-full max-w-lg px-2 py-5 md:h-auto md:justify-center md:px-10 md:py-10 md:rounded-xl animate-fadeIn bg-b-primary/75">
       <span className="flex flex-col items-center w-full mx-auto md:items-start">
         <h2 className="text-4xl font-bold">Play now</h2>
         <i className="text-xl font-bold text-sky-400">Test your skills...</i>
@@ -81,14 +80,14 @@ export const LoginPage = () => {
           <input
             type="email"
             required
-            value={inputValues?.email || ""}
+            value={inputValues?.Email || ""}
             autoComplete="off"
-            id="email"
-            name="email"
+            id="Email"
+            name="Email"
             onChange={handleChange}
             placeholder="Introduce your email"
             className={`px-3 py-2 rounded-md outline-none border-2 bg-t-primary/10 focus:bg-t-primary/15 placeholder:italic transition-colors duration-500 ${
-              inputValues?.email.length === 0
+              inputValues?.Email.length === 0
                 ? "border-transparent"
                 : isValidValue.email
                 ? "border-l-green-500 border-transparent"
@@ -109,14 +108,14 @@ export const LoginPage = () => {
           <input
             type="password"
             required
-            value={inputValues?.password || ""}
+            value={inputValues?.Password || ""}
             autoComplete="off"
-            id="password"
-            name="password"
+            id="Password"
+            name="Password"
             onChange={handleChange}
             placeholder="Introduce tu contraseña"
             className={`px-3 py-2 rounded-md outline-none border-2 bg-t-primary/10 focus:bg-t-primary/15 placeholder:italic transition-colors duration-500 ${
-              inputValues?.password.length === 0
+              inputValues?.Password.length === 0
                 ? "border-transparent"
                 : isValidValue.password
                 ? "border-l-green-500 border-transparent"
