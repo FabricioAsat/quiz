@@ -42,7 +42,7 @@ func LoginUser(c *fiber.Ctx) error {
 
 	if err := userCollection.FindOneAndUpdate(ctx, bson.M{"_id": backUser.ID}, bson.M{"$set": bson.M{"isActive": true}}).Decode(&backUser); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal server error",
+			"error": err,
 		})
 	}
 
@@ -51,13 +51,13 @@ func LoginUser(c *fiber.Ctx) error {
 	cursor, err := userCollection.Find(ctx, bson.M{"isActive": true})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal server error (find isActive)",
+			"error": err,
 		})
 	}
 	var activeUsers []models.MUser
 	if err = cursor.All(ctx, &activeUsers); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal server error (find all)",
+			"error": err,
 		})
 	}
 

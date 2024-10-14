@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"quiz-back/database"
-	"quiz-back/models"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,25 +10,24 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func GetUserById(c *fiber.Ctx) error {
+func LogoutUser(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(c.Context(), 10*time.Second)
-	db, disconnect := database.ConnectDB("get by id")
+	db, disconnect := database.ConnectDB("logout")
 	defer cancel()
 	defer disconnect()
 
-	var user models.MUser
 	id := c.Params("id")
 	objID, _ := primitive.ObjectIDFromHex(id)
 	userCollection := database.GetCollection(db, "users")
 
-	if err := userCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&user); err != nil {
+	if err := userCollection.FindOneAndUpdate(ctx, bson.M{"_id": objID}, bson.M{"$set": bson.M{"isActive": false}}); err.Err() != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err,
+			"error": err.Err().Error(),
 		})
 	}
-	user.Password = ""
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Ok",
-		"data":    user,
+		"data":    fiber.Map{},
 	})
 }

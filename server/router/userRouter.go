@@ -12,6 +12,8 @@ func UserRouter(app *fiber.App) {
 	userR.Get("/user/:id", user.GetUserById)
 	userR.Post("/create", user.CreateUser)
 	userR.Post("/login", user.LoginUser)
+	userR.Put("/logout/:id", user.LogoutUser)
+
 	userR.Get("/active", func(c *fiber.Ctx) error {
 		activerUsers, _ := user.GetActiveUsers(c)
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
