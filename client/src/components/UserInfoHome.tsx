@@ -15,16 +15,19 @@ export const UserInfoHome = ({
   currentUser,
   setShowUserInfo,
   showUserInfo,
+  isRefresh,
+  setIsRefresh,
 }: {
   currentUser: TUser;
   showUserInfo: boolean;
   setShowUserInfo: React.Dispatch<React.SetStateAction<boolean>>;
+  isRefresh: boolean;
+  setIsRefresh: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [allUsersActives, setAllUsersActives] = useState<TUser[]>([]);
   const [filterUsers, setFilterUsers] = useState<TUser[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [waitingResponse, setwaitingResponse] = useState(true);
-  const [isRefresh, setIsRefresh] = useState(false);
   const [isLogout, setIsLogout] = useState(false);
 
   const navigateTo = useNavigate();

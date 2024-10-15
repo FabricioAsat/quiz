@@ -62,7 +62,7 @@ func LoginUser(c *fiber.Ctx) error {
 	}
 
 	for range constants.Clients {
-		constants.Broadcast <- backUser
+		constants.Broadcast <- "LOGIN " + backUser.Username
 	}
 	// ! -------------------------------------------------------------
 

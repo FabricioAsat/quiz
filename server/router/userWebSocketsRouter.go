@@ -10,14 +10,15 @@ import (
 
 func UserWebSocketsRouter(app *fiber.App) {
 
-	app.Get("/ws", websocket.New(ws.LoginMessageWs))
+	//
+	app.Get("/ws/:id", websocket.New(ws.LoginMessageWs))
 
 	//* |Goroutine| para enviar mensajes a todos los clientes
 	go func() {
 		for {
 			user := <-constants.Broadcast
 			for client := range constants.Clients {
-				err := client.WriteMessage(websocket.TextMessage, []byte(user.Username+" has conected"))
+				err := client.WriteMessage(websocket.TextMessage, []byte(user))
 				if err != nil {
 					client.Close()
 					delete(constants.Clients, client)

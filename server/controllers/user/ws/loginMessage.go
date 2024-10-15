@@ -8,8 +8,10 @@ import (
 
 func LoginMessageWs(c *websocket.Conn) {
 	defer func() {
+		constants.Broadcast <- "LOGOUT "
 		c.Close()
 	}()
+
 	constants.Clients[c] = true
 	for {
 		_, _, err := c.ReadMessage()
