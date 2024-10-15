@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { UserInfoHome } from "../components/UserInfoHome";
 import { NotPlaying } from "../components/NotPlaying";
 import { MESSAGES_WS } from "../utils/messagesConstants";
+import { Playing } from "../components/Playing";
 
 const initialUserInfo: TUser = {
   ID: "",
@@ -15,8 +16,10 @@ const initialUserInfo: TUser = {
 
 export const QuizHome = () => {
   const [currentUser, setCurrentUser] = useState<TUser>(initialUserInfo);
+  const [versusUser, setVersusUser] = useState<TUser>(initialUserInfo);
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [isRefresh, setIsRefresh] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const navigateTo = useNavigate();
 
@@ -69,8 +72,11 @@ export const QuizHome = () => {
           isRefresh={isRefresh}
         />
       </div>
+      <button onClick={() => setIsPlaying(!isPlaying)} className="absolute bottom-0 left-0 px-2 py-1 bg-red-600">
+        Play
+      </button>
 
-      <NotPlaying />
+      {isPlaying ? <Playing versusUser={versusUser} /> : <NotPlaying />}
     </section>
   );
 };
