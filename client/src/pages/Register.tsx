@@ -64,7 +64,7 @@ export const RegisterPage = () => {
   }
 
   return (
-    <section className="flex flex-col items-center justify-start w-full h-full max-w-lg px-2 py-5 md:h-auto md:justify-center md:px-10 md:py-10 md:rounded-xl animate-fadeIn bg-b-primary/75">
+    <section className="flex flex-col items-center justify-start w-full h-full px-2 py-5 overflow-y-auto md:max-w-lg md:h-auto md:justify-center md:px-10 md:py-10 md:rounded-xl animate-fadeIn bg-b-primary/75">
       <span className="flex flex-col items-start w-full mx-auto">
         <h2 className="text-4xl font-bold">Create an account</h2>
         <i className="w-full text-xl font-bold text-sky-400">It's quick and easy</i>

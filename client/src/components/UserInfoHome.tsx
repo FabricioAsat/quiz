@@ -20,6 +20,8 @@ export const UserInfoHome = ({
   setIsRefresh,
   setVersusUser,
   isPlaying,
+  allUsersActives,
+  setAllUsersActives,
 }: {
   currentUser: TUser;
   showUserInfo: boolean;
@@ -28,8 +30,9 @@ export const UserInfoHome = ({
   setIsRefresh: React.Dispatch<React.SetStateAction<boolean>>;
   setVersusUser: React.Dispatch<React.SetStateAction<TUser>>;
   isPlaying: boolean;
+  allUsersActives: TUser[];
+  setAllUsersActives: React.Dispatch<React.SetStateAction<TUser[]>>;
 }) => {
-  const [allUsersActives, setAllUsersActives] = useState<TUser[]>([]);
   const [filterUsers, setFilterUsers] = useState<TUser[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [waitingResponse, setwaitingResponse] = useState(true);
@@ -64,14 +67,13 @@ export const UserInfoHome = ({
 
   function handleChallengeProp(user: TUser) {
     if (isPlaying) return;
-
+    setVersusUser(user);
     async function request() {
       const response = await postChallengeTo(currentUser.ID, user.ID);
       if (!response.status) {
         toast.error(response.message);
         return;
       }
-      setVersusUser(user);
     }
 
     request();

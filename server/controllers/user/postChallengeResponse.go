@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"quiz-back/constants"
 
 	"github.com/gofiber/contrib/websocket"
@@ -17,6 +18,8 @@ func PostChallengeResponse(c *fiber.Ctx) error {
 	if err := c.BodyParser(&responsePayload); err != nil {
 		return err
 	}
+	fmt.Println(responsePayload)
+	fmt.Println("Clients ", constants.Clients)
 
 	// Buscar la conexión del usuario que envió el reto (retador)
 	fromConn, existsFrom := constants.Clients[responsePayload.FromUserID]

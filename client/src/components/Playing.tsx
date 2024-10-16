@@ -1,67 +1,27 @@
 import { useEffect, useState } from "react";
 import heroImage from "../assets/svg/question.svg";
 
-const examplesQuestions = [
-  {
-    question: "What is the capital of France?",
-    answers: ["Paris", "London", "Berlin", "Madrid"],
-    correctAnswer: "Paris",
-  },
-  {
-    question: "What is the largest planet in our solar system?",
-    answers: ["Jupiter", "Saturn", "Uranus", "Neptune"],
-    correctAnswer: "Jupiter",
-  },
-  {
-    question: "Which country is known as the 'Land of the Rising Sun'?",
-    answers: ["Japan", "China", "India", "USA"],
-    correctAnswer: "Japan",
-  },
-  {
-    question: "What is the smallest country in the world?",
-    answers: ["Vatican City", "Monaco", "Nauru", "Tuvalu"],
-    correctAnswer: "Vatican City",
-  },
-  {
-    question: "Which of the following planets is known for being the hottest?",
-    answers: ["Mercury", "Venus", "Mars", "Jupiter"],
-    correctAnswer: "Venus",
-  },
-  {
-    question: "What is the largest living species of lizard?",
-    answers: ["Komodo dragon", "Saltwater crocodile", "Black mamba", "Green anaconda"],
-    correctAnswer: "Komodo dragon",
-  },
-  {
-    question: "What is the highest mountain peak in the solar system?",
-    answers: ["Mount Everest", "Olympus Mons", "Mauna Kea", "Denali"],
-    correctAnswer: "Olympus Mons",
-  },
-  {
-    question: "Which of the following elements is the lightest?",
-    answers: ["Hydrogen", "Helium", "Oxygen", "Nitrogen"],
-    correctAnswer: "Hydrogen",
-  },
-  {
-    question: "What is the process by which water moves through a plant?",
-    answers: ["Respiration", "Photosynthesis", "Transpiration", "Evaporation"],
-    correctAnswer: "Transpiration",
-  },
-];
-
 interface ISelectedAnwser {
   selected: string;
   isCorrect: boolean;
 }
 
-export const Playing = ({ versusUser, currentUser }: { versusUser: TUser; currentUser: TUser }) => {
+export const Playing = ({
+  versusUser,
+  currentUser,
+  allQuestions,
+}: {
+  versusUser: TUser;
+  currentUser: TUser;
+  allQuestions: TQuestion[];
+}) => {
   const [currentQuestionPosition, setCurrentQuestionPosition] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<ISelectedAnwser>();
   const [timer, setTimer] = useState(0);
 
   function handleQuestions(answer: string) {
     if (selectedAnswer) return;
-    if (answer === examplesQuestions[currentQuestionPosition].correctAnswer) {
+    if (answer === allQuestions[currentQuestionPosition].Answer) {
       setSelectedAnswer({ selected: answer, isCorrect: true });
       return;
     }
@@ -69,7 +29,7 @@ export const Playing = ({ versusUser, currentUser }: { versusUser: TUser; curren
   }
 
   function handleNextQuestion() {
-    if (currentQuestionPosition === examplesQuestions.length - 1) {
+    if (currentQuestionPosition === allQuestions.length - 1) {
       return;
     }
     setCurrentQuestionPosition(currentQuestionPosition + 1);
@@ -87,6 +47,14 @@ export const Playing = ({ versusUser, currentUser }: { versusUser: TUser; curren
     };
   }, []);
 
+  if (!allQuestions.length)
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full bg-b-primary/40 gap-y-3">
+        <div className="w-10 h-10 mt-10 border-2 border-transparent rounded-full border-b-green-500 animate-spin"></div>
+        <p className="italic">Waiting questions...</p>
+      </div>
+    );
+
   return (
     <section className="flex flex-col items-center justify-start w-full select-none bg-b-primary/40 animate-fadeIn">
       <picture className="flex items-center justify-center py-2 ">
@@ -100,7 +68,7 @@ export const Playing = ({ versusUser, currentUser }: { versusUser: TUser; curren
           <div className="h-1 bg-gray-300 rounded">
             <div
               className="h-1 bg-green-500 rounded"
-              style={{ width: `${(currentQuestionPosition / examplesQuestions.length) * 100}%` }}
+              style={{ width: `${(currentQuestionPosition / allQuestions.length) * 100}%` }}
             />
           </div>
           <p className="mt-1 text-sm italic">
@@ -113,7 +81,7 @@ export const Playing = ({ versusUser, currentUser }: { versusUser: TUser; curren
             <div
               className="h-1 bg-gray-300 rounded"
               style={{
-                width: `${((examplesQuestions.length - currentQuestionPosition) / examplesQuestions.length) * 100}%`,
+                width: `${((allQuestions.length - currentQuestionPosition) / allQuestions.length) * 100}%`,
               }}
             />
           </div>
@@ -123,15 +91,15 @@ export const Playing = ({ versusUser, currentUser }: { versusUser: TUser; curren
       <aside className="flex flex-col items-center justify-start w-full h-full px-5 mt-5 overflow-y-auto">
         <div className="w-full max-w-3xl py-5 rounded-md">
           <p className="mb-4 text-xl italic font-semibold text-t-primary/75">
-            Question {currentQuestionPosition + 1} of {examplesQuestions.length}
+            Question {currentQuestionPosition + 1} of {allQuestions.length}
           </p>
           <h3 className="w-full text-3xl font-bold text-center text-t-primary">
-            {examplesQuestions[currentQuestionPosition].question}
+            {allQuestions[currentQuestionPosition].Question}
           </h3>
         </div>
 
         <div className="flex flex-col items-center justify-start w-full gap-y-6">
-          {examplesQuestions[currentQuestionPosition].answers.map((answer) => (
+          {allQuestions[currentQuestionPosition].Options.map((answer) => (
             <button
               onClick={() => handleQuestions(answer)}
               disabled={!!selectedAnswer}
@@ -141,7 +109,7 @@ export const Playing = ({ versusUser, currentUser }: { versusUser: TUser; curren
                   ? "bg-green-500"
                   : !selectedAnswer?.isCorrect && selectedAnswer?.selected === answer
                   ? "bg-red-500"
-                  : !!selectedAnswer && examplesQuestions[currentQuestionPosition].correctAnswer === answer
+                  : !!selectedAnswer && allQuestions[currentQuestionPosition].Answer === answer
                   ? "bg-green-500"
                   : "bg-t-primary hover:bg-gray-300 disabled:hover:bg-t-primary"
               } `}

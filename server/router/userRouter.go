@@ -25,5 +25,6 @@ func UserRouter(app *fiber.App) {
 	// Socket helpers rotues
 	userR.Post("/challenge", user.PostChallenge)
 	userR.Post("/challenge/response", user.PostChallengeResponse)
+	userR.Post("/start-quiz", user.StartQuiz)
 
 }

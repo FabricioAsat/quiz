@@ -14,6 +14,7 @@ export const NotPlaying = ({
   setIncomingChallenge: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   function handleChallengeResp(accept: boolean) {
+    if(!currentUser.ID || !versusUser.ID) return;
     async function request() {
       const response = await postChallengeToResponse(currentUser.ID, versusUser.ID, accept);
 

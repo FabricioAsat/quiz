@@ -5,6 +5,7 @@ import { UserInfoHome } from "../components/UserInfoHome";
 import { NotPlaying } from "../components/NotPlaying";
 import { MESSAGES_WS } from "../utils/messagesConstants";
 import { Playing } from "../components/Playing";
+import { postStartQuiz } from "../api/challengeReq";
 
 const initialUserInfo: TUser = {
   ID: "",
@@ -15,16 +16,17 @@ const initialUserInfo: TUser = {
 };
 
 export const QuizHome = () => {
+  const [allQuestions, setAllQuestions] = useState<TQuestion[]>([]);
+  const [allUsersActives, setAllUsersActives] = useState<TUser[]>([]);
   const [currentUser, setCurrentUser] = useState<TUser>(initialUserInfo);
   const [versusUser, setVersusUser] = useState<TUser>(initialUserInfo);
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [isRefresh, setIsRefresh] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-
   const [incomingChallenge, setIncomingChallenge] = useState<boolean>(false); // Guardar reto entrante
 
   const navigateTo = useNavigate();
-
+  console.log(allQuestions);
   //! Conección WebSocket
   const [messageWS, setMessageWS] = useState("");
   useEffect(() => {
@@ -49,29 +51,58 @@ export const QuizHome = () => {
     if (!messageWS) return;
     switch (true) {
       case messageWS.startsWith(MESSAGES_WS.LOGIN):
-        setIsRefresh(true);
-        toast.info(messageWS.replace(MESSAGES_WS.LOGIN, "") + " has connected");
+        switchHandlerLogin();
         break;
       case messageWS.startsWith(MESSAGES_WS.LOGOUT):
-        setIsRefresh(true);
+        switchHandlerLogout();
         break;
       case messageWS.startsWith(MESSAGES_WS.CHALLENGE):
-        setIncomingChallenge(true);
+        switchHandlerChallenge();
         break;
       case messageWS.startsWith(MESSAGES_WS.ACCEPT):
-        setIncomingChallenge(false);
-        setIsPlaying(true);
-        setShowUserInfo(false);
+        switchHandlerAccept();
         break;
       case messageWS.startsWith(MESSAGES_WS.REJECT):
-        setIncomingChallenge(false);
-        setIsPlaying(false);
+        switchHandlerReject();
         break;
       default:
-        console.log(messageWS);
+        setAllQuestions(JSON.parse(messageWS));
     }
   }, [messageWS]);
   //! ---------------------------------------------------------------
+
+  function switchHandlerLogin() {
+    setIsRefresh(true);
+    toast.info(messageWS.replace(MESSAGES_WS.LOGIN, "") + " has connected");
+  }
+  function switchHandlerLogout() {
+    setIsRefresh(true);
+  }
+  function switchHandlerChallenge() {
+    setIncomingChallenge(true);
+    const uuid = messageWS.match(/User: (\w+)/)?.[1];
+    setVersusUser(allUsersActives.find((user) => user.ID === uuid)!);
+  }
+  function switchHandlerAccept() {
+    setIncomingChallenge(false);
+    setShowUserInfo(false);
+    setIsPlaying(true);
+    async function request() {
+      const combined = currentUser.ID + versusUser.ID;
+      const response = await postStartQuiz(btoa(combined), [currentUser.ID, versusUser.ID]);
+      if (!response.status) {
+        toast.error(response.message);
+        return;
+      }
+      toast.success("Start Quiz");
+    }
+    request();
+  }
+  function switchHandlerReject() {
+    setIncomingChallenge(false);
+    setIsPlaying(false);
+    setVersusUser(initialUserInfo);
+  }
 
   return (
     <section className="flex w-screen h-screen">
@@ -88,11 +119,13 @@ export const QuizHome = () => {
           isRefresh={isRefresh}
           setVersusUser={setVersusUser}
           isPlaying={isPlaying}
+          allUsersActives={allUsersActives}
+          setAllUsersActives={setAllUsersActives}
         />
       </div>
 
       {isPlaying ? (
-        <Playing versusUser={versusUser} currentUser={currentUser} />
+        <Playing versusUser={versusUser} currentUser={currentUser} allQuestions={allQuestions} />
       ) : (
         <NotPlaying
           versusUser={versusUser}
