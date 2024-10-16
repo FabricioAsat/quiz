@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import heroImage from "../assets/svg/question.svg";
-import incognitoImage from "../assets/svg/incognito.svg";
 
 const examplesQuestions = [
   {
@@ -18,6 +17,36 @@ const examplesQuestions = [
     answers: ["Japan", "China", "India", "USA"],
     correctAnswer: "Japan",
   },
+  {
+    question: "What is the smallest country in the world?",
+    answers: ["Vatican City", "Monaco", "Nauru", "Tuvalu"],
+    correctAnswer: "Vatican City",
+  },
+  {
+    question: "Which of the following planets is known for being the hottest?",
+    answers: ["Mercury", "Venus", "Mars", "Jupiter"],
+    correctAnswer: "Venus",
+  },
+  {
+    question: "What is the largest living species of lizard?",
+    answers: ["Komodo dragon", "Saltwater crocodile", "Black mamba", "Green anaconda"],
+    correctAnswer: "Komodo dragon",
+  },
+  {
+    question: "What is the highest mountain peak in the solar system?",
+    answers: ["Mount Everest", "Olympus Mons", "Mauna Kea", "Denali"],
+    correctAnswer: "Olympus Mons",
+  },
+  {
+    question: "Which of the following elements is the lightest?",
+    answers: ["Hydrogen", "Helium", "Oxygen", "Nitrogen"],
+    correctAnswer: "Hydrogen",
+  },
+  {
+    question: "What is the process by which water moves through a plant?",
+    answers: ["Respiration", "Photosynthesis", "Transpiration", "Evaporation"],
+    correctAnswer: "Transpiration",
+  },
 ];
 
 interface ISelectedAnwser {
@@ -25,9 +54,10 @@ interface ISelectedAnwser {
   isCorrect: boolean;
 }
 
-export const Playing = ({ versusUser }: { versusUser: TUser }) => {
+export const Playing = ({ versusUser, currentUser }: { versusUser: TUser; currentUser: TUser }) => {
   const [currentQuestionPosition, setCurrentQuestionPosition] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<ISelectedAnwser>();
+  const [timer, setTimer] = useState(0);
 
   function handleQuestions(answer: string) {
     if (selectedAnswer) return;
@@ -39,10 +69,23 @@ export const Playing = ({ versusUser }: { versusUser: TUser }) => {
   }
 
   function handleNextQuestion() {
-    if (currentQuestionPosition === examplesQuestions.length - 1) return;
+    if (currentQuestionPosition === examplesQuestions.length - 1) {
+      return;
+    }
     setCurrentQuestionPosition(currentQuestionPosition + 1);
     setSelectedAnswer(undefined);
   }
+
+  //*: Timer effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((timer) => timer + 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <section className="flex flex-col items-center justify-start w-full select-none bg-b-primary/40 animate-fadeIn">
@@ -51,30 +94,29 @@ export const Playing = ({ versusUser }: { versusUser: TUser }) => {
         <h2 className="text-2xl font-bold text-center">Quiz Time</h2>
       </picture>
 
-      <section className="flex flex-col items-center justify-center w-full px-5 mt-5 gap-y-4 md:flex-row">
-        <div className="flex items-center w-full">
-          <img src={incognitoImage} alt="User image" className="w-8 h-8" />
-          <span className="flex flex-col items-start justify-center w-full h-full pl-3">
-            <h3 className="font-bold truncate">You: {versusUser.Username || "Anonymous"}</h3>
-            <div className="w-full max-w-xs bg-gray-200 rounded-full">
-              <div
-                className="h-1 bg-green-500 rounded-full"
-                style={{ width: `${((currentQuestionPosition + 0) / examplesQuestions.length) * 100}%` }}
-              />
-            </div>
-          </span>
+      <section className="grid w-full max-w-4xl grid-cols-2 px-5 mt-5 gap-x-2 gap-y-4 md:flex-row">
+        <div className="flex flex-col w-full max-w-xl">
+          <small className="italic font-bold text-left text-green-300">{currentUser.Username || "Unknown"}</small>
+          <div className="h-1 bg-gray-300 rounded">
+            <div
+              className="h-1 bg-green-500 rounded"
+              style={{ width: `${(currentQuestionPosition / examplesQuestions.length) * 100}%` }}
+            />
+          </div>
+          <p className="mt-1 text-sm italic">
+            Timer: <b className="text-green-300">{timer}</b> seg.
+          </p>
         </div>
-        <div className="flex items-center w-full">
-          <span className="flex flex-col items-end justify-center w-full h-full pr-3">
-            <h3 className="font-bold truncate">Versus: {versusUser.Username || "Anonymous"}</h3>
-            <div className="w-full max-w-xs bg-gray-200 rounded-full">
-              <div
-                className="h-1 bg-green-500 rounded-full"
-                style={{ width: `${((currentQuestionPosition + 0) / examplesQuestions.length) * 100}%` }}
-              />
-            </div>
-          </span>
-          <img src={incognitoImage} alt="User image" className="w-8 h-8" />
+        <div className="flex flex-col w-full max-w-xl">
+          <small className="italic font-bold text-right text-red-300">{versusUser.Username || "Unknown"}</small>
+          <div className="h-1 bg-red-500 rounded">
+            <div
+              className="h-1 bg-gray-300 rounded"
+              style={{
+                width: `${((examplesQuestions.length - currentQuestionPosition) / examplesQuestions.length) * 100}%`,
+              }}
+            />
+          </div>
         </div>
       </section>
 

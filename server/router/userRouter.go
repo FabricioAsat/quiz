@@ -22,6 +22,8 @@ func UserRouter(app *fiber.App) {
 		})
 	})
 
-	// Socket ro|ute
+	// Socket helpers rotues
+	userR.Post("/challenge", user.PostChallenge)
+	userR.Post("/challenge/response", user.PostChallengeResponse)
 
 }

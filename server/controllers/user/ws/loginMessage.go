@@ -7,17 +7,19 @@ import (
 )
 
 func LoginMessageWs(c *websocket.Conn) {
-	defer func() {
-		constants.Broadcast <- "LOGOUT "
-		c.Close()
-	}()
+	userID := c.Params("id")
+	constants.Clients[userID] = c
 
-	constants.Clients[c] = true
 	for {
 		_, _, err := c.ReadMessage()
 		if err != nil {
-			delete(constants.Clients, c)
 			break
 		}
 	}
+
+	defer func() {
+		constants.Broadcast <- "LOGOUT "
+		delete(constants.Clients, userID)
+		c.Close()
+	}()
 }

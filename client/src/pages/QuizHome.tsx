@@ -21,6 +21,8 @@ export const QuizHome = () => {
   const [isRefresh, setIsRefresh] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const [incomingChallenge, setIncomingChallenge] = useState<boolean>(false); // Guardar reto entrante
+
   const navigateTo = useNavigate();
 
   //! Conección WebSocket
@@ -42,9 +44,9 @@ export const QuizHome = () => {
     };
   }, [currentUser.ID]);
 
+  //*: Effect - Decide que hacer dependiendo el mensaje
   useEffect(() => {
     if (!messageWS) return;
-
     switch (true) {
       case messageWS.startsWith(MESSAGES_WS.LOGIN):
         setIsRefresh(true);
@@ -53,6 +55,20 @@ export const QuizHome = () => {
       case messageWS.startsWith(MESSAGES_WS.LOGOUT):
         setIsRefresh(true);
         break;
+      case messageWS.startsWith(MESSAGES_WS.CHALLENGE):
+        setIncomingChallenge(true);
+        break;
+      case messageWS.startsWith(MESSAGES_WS.ACCEPT):
+        setIncomingChallenge(false);
+        setIsPlaying(true);
+        setShowUserInfo(false);
+        break;
+      case messageWS.startsWith(MESSAGES_WS.REJECT):
+        setIncomingChallenge(false);
+        setIsPlaying(false);
+        break;
+      default:
+        console.log(messageWS);
     }
   }, [messageWS]);
   //! ---------------------------------------------------------------
@@ -60,7 +76,7 @@ export const QuizHome = () => {
   return (
     <section className="flex w-screen h-screen">
       <div
-        className={`fixed top-0 w-full h-full bg-b-primary/85 sm:bg-b-primary/50 sm:max-w-96 sm:static ${
+        className={`fixed z-40 top-0 w-full h-full bg-b-primary/85 sm:bg-b-primary/50 sm:max-w-96 sm:static ${
           showUserInfo ? "left-0" : "-left-full sm:left-0"
         }`}
       >
@@ -70,13 +86,21 @@ export const QuizHome = () => {
           showUserInfo={showUserInfo}
           setIsRefresh={setIsRefresh}
           isRefresh={isRefresh}
+          setVersusUser={setVersusUser}
+          isPlaying={isPlaying}
         />
       </div>
-      <button onClick={() => setIsPlaying(!isPlaying)} className="absolute bottom-0 left-0 px-2 py-1 bg-red-600">
-        Play
-      </button>
 
-      {isPlaying ? <Playing versusUser={versusUser} /> : <NotPlaying />}
+      {isPlaying ? (
+        <Playing versusUser={versusUser} currentUser={currentUser} />
+      ) : (
+        <NotPlaying
+          versusUser={versusUser}
+          currentUser={currentUser}
+          incomingChallenge={incomingChallenge}
+          setIncomingChallenge={setIncomingChallenge}
+        />
+      )}
     </section>
   );
 };

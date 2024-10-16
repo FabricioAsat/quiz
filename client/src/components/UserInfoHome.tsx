@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { getActiveUsers, logoutUser } from "../api/userReq";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { postChallengeTo } from "../api/challengeReq";
 
 export const UserInfoHome = ({
   currentUser,
@@ -17,12 +18,16 @@ export const UserInfoHome = ({
   showUserInfo,
   isRefresh,
   setIsRefresh,
+  setVersusUser,
+  isPlaying,
 }: {
   currentUser: TUser;
   showUserInfo: boolean;
   setShowUserInfo: React.Dispatch<React.SetStateAction<boolean>>;
   isRefresh: boolean;
   setIsRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+  setVersusUser: React.Dispatch<React.SetStateAction<TUser>>;
+  isPlaying: boolean;
 }) => {
   const [allUsersActives, setAllUsersActives] = useState<TUser[]>([]);
   const [filterUsers, setFilterUsers] = useState<TUser[]>([]);
@@ -54,6 +59,21 @@ export const UserInfoHome = ({
       setIsLogout(false);
       navigateTo("/login");
     }
+    request();
+  }
+
+  function handleChallengeProp(user: TUser) {
+    if (isPlaying) return;
+
+    async function request() {
+      const response = await postChallengeTo(currentUser.ID, user.ID);
+      if (!response.status) {
+        toast.error(response.message);
+        return;
+      }
+      setVersusUser(user);
+    }
+
     request();
   }
 
@@ -90,7 +110,7 @@ export const UserInfoHome = ({
         </span>
         <button
           onClick={() => setShowUserInfo(!showUserInfo)}
-          className={`z-50 top-4 transition-all duration-500 sm:hidden ${
+          className={`top-4 transition-all duration-500 sm:hidden ${
             showUserInfo ? "scale-x-[-1] translate-x-0" : "translate-x-16"
           }`}
         >
@@ -151,7 +171,11 @@ export const UserInfoHome = ({
                   <h3 className="font-bold truncate">{user.Username}</h3>
                   <i className="text-xs truncate text-t-primary/50">{user.ID}</i>
                 </span>
-                <button title={`Play whit ${user.Username}`} className="px-2 py-1 border rounded-lg">
+                <button
+                  onClick={() => handleChallengeProp(user)}
+                  title={`Play whit ${user.Username}`}
+                  className="px-2 py-1 border rounded-lg"
+                >
                   <img src={playImage} alt="Play icon" className="w-6 h-6" />
                 </button>
               </section>
