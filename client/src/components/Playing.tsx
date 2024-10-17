@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import heroImage from "../assets/svg/question.svg";
+import { postNextQuestion } from "../api/challengeReq";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface ISelectedAnwser {
   selected: string;
@@ -10,14 +13,24 @@ export const Playing = ({
   versusUser,
   currentUser,
   allQuestions,
+  gameId,
+  currentOpponentProgress,
+  handleReset,
 }: {
   versusUser: TUser;
   currentUser: TUser;
   allQuestions: TQuestion[];
+  gameId: string;
+  currentOpponentProgress: number;
+  handleReset: () => void;
 }) => {
   const [currentQuestionPosition, setCurrentQuestionPosition] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<ISelectedAnwser>();
+  const [finish, setFinish] = useState({ you: false, versus: false });
   const [timer, setTimer] = useState(0);
+  const [results, setResults] = useState({ corrects: 0, wrongs: 0, time: 0 });
+
+  const navigateTo = useNavigate();
 
   function handleQuestions(answer: string) {
     if (selectedAnswer) return;
@@ -29,11 +42,42 @@ export const Playing = ({
   }
 
   function handleNextQuestion() {
+    if (!selectedAnswer) return;
+
+    if (selectedAnswer?.isCorrect) {
+      setResults({ ...results, corrects: results.corrects + 1 });
+    } else {
+      setResults({ ...results, wrongs: results.wrongs + 1 });
+    }
+
     if (currentQuestionPosition === allQuestions.length - 1) {
+      setCurrentQuestionPosition(currentQuestionPosition + 1);
+      setFinish({ ...finish, you: true });
+      setResults({ ...results, time: timer });
+      clearInterval(timer);
       return;
     }
+
+    async function request() {
+      const response = await postNextQuestion(gameId, currentUser.ID, currentQuestionPosition + 1);
+      if (!response.status) {
+        toast.error(response.message);
+        return;
+      }
+    }
+    request();
     setCurrentQuestionPosition(currentQuestionPosition + 1);
     setSelectedAnswer(undefined);
+  }
+
+  function handleResetPlaying() {
+    setCurrentQuestionPosition(0);
+    setSelectedAnswer(undefined);
+    setFinish({ ...finish, you: false, versus: false });
+    setResults({ corrects: 0, wrongs: 0, time: 0 });
+    setTimer(0);
+    navigateTo("/");
+    handleReset();
   }
 
   //*: Timer effect
@@ -46,6 +90,50 @@ export const Playing = ({
       clearInterval(interval);
     };
   }, []);
+
+  useEffect(() => {
+    if (currentOpponentProgress === allQuestions.length - 1) {
+      setFinish({ ...finish, versus: true });
+    }
+  }, [currentOpponentProgress]);
+
+  if (!finish.you && !finish.versus)
+    return (
+      <section className="flex flex-col items-center justify-center w-full h-full pt-20 overflow-y-auto gap-x-10 bg-b-primary/40 gap-y-3">
+        <div className="flex flex-col items-center justify-center w-full gap-10 lg:flex-row gap-y-3">
+          <article className="flex flex-col items-center justify-start w-full max-w-md py-10 bg-green-500/10">
+            <h2 className="text-5xl font-extrabold text-sky-500">⭐ Victoria ⭐</h2>
+            <h4 className="w-full text-3xl font-bold text-center">{currentUser.Username}</h4>
+            <p className="text-2xl font-bold">Corrects: {results.corrects}</p>
+            <p className="text-2xl font-bold">Wrongs: {results.wrongs}</p>
+            <p className="text-2xl font-bold">Time: {timer} seg.</p>
+          </article>
+
+          <article className="flex flex-col items-center justify-start w-full max-w-md py-10 bg-red-400/10">
+            <h2 className="text-5xl font-extrabold text-red-500">💀 Derrota 💀</h2>
+            <h4 className="w-full text-3xl font-bold text-center">{versusUser.Username}</h4>
+            <p className="text-2xl font-bold">Corrects: {results.corrects}</p>
+            <p className="text-2xl font-bold">Wrongs: {results.wrongs}</p>
+            <p className="text-2xl font-bold">Time: {timer} seg.</p>
+          </article>
+        </div>
+
+        <button
+          onClick={handleResetPlaying}
+          className="px-10 py-2 mt-10 text-3xl font-bold text-center rounded-md bg-sky-400"
+        >
+          Go back
+        </button>
+      </section>
+    );
+
+  if (finish.you)
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full bg-b-primary/40 gap-y-3">
+        <div className="w-10 h-10 mt-10 border-2 border-transparent rounded-full border-b-green-500 animate-spin"></div>
+        <p className="italic">Waiting your opponent...</p>
+      </div>
+    );
 
   if (!allQuestions.length)
     return (
@@ -81,7 +169,7 @@ export const Playing = ({
             <div
               className="h-1 bg-gray-300 rounded"
               style={{
-                width: `${((allQuestions.length - currentQuestionPosition) / allQuestions.length) * 100}%`,
+                width: `${((allQuestions.length - currentOpponentProgress) / allQuestions.length) * 100}%`,
               }}
             />
           </div>
@@ -118,16 +206,15 @@ export const Playing = ({
             </button>
           ))}
 
-          {!!selectedAnswer && (
-            <div className="flex items-center justify-end w-full max-w-2xl mt-10">
-              <button
-                onClick={handleNextQuestion}
-                className="px-10 py-3 font-bold bg-blue-500 text-t-primary rounded-xl"
-              >
-                Next{" >"}
-              </button>
-            </div>
-          )}
+          <div className="flex items-center justify-end w-full max-w-2xl mt-10">
+            <button
+              disabled={!selectedAnswer}
+              onClick={handleNextQuestion}
+              className="px-10 py-3 font-bold bg-blue-500 text-t-primary rounded-xl"
+            >
+              Next{" >"}
+            </button>
+          </div>
         </div>
       </aside>
     </section>

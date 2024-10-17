@@ -26,5 +26,6 @@ func UserRouter(app *fiber.App) {
 	userR.Post("/challenge", user.PostChallenge)
 	userR.Post("/challenge/response", user.PostChallengeResponse)
 	userR.Post("/start-quiz", user.StartQuiz)
+	userR.Post("/next-question", user.NextQuestion)
 
 }

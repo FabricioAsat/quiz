@@ -23,10 +23,12 @@ export const QuizHome = () => {
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [isRefresh, setIsRefresh] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentGameId, setCurrentGameId] = useState("");
   const [incomingChallenge, setIncomingChallenge] = useState<boolean>(false); // Guardar reto entrante
+  const [currentOpponentProgress, setCurrentOpponentProgress] = useState(0);
 
   const navigateTo = useNavigate();
-  console.log(allQuestions);
+
   //! Conección WebSocket
   const [messageWS, setMessageWS] = useState("");
   useEffect(() => {
@@ -65,8 +67,13 @@ export const QuizHome = () => {
       case messageWS.startsWith(MESSAGES_WS.REJECT):
         switchHandlerReject();
         break;
+      case messageWS.startsWith(MESSAGES_WS.QUESTIONS):
+        switchHandlerQuestions();
+        break;
+      case messageWS.startsWith(MESSAGES_WS.PROGRESS):
+        switchHandlerProgress();
+        break;
       default:
-        setAllQuestions(JSON.parse(messageWS));
     }
   }, [messageWS]);
   //! ---------------------------------------------------------------
@@ -89,7 +96,9 @@ export const QuizHome = () => {
     setIsPlaying(true);
     async function request() {
       const combined = currentUser.ID + versusUser.ID;
-      const response = await postStartQuiz(btoa(combined), [currentUser.ID, versusUser.ID]);
+      const gameId = btoa(combined);
+      setCurrentGameId(gameId);
+      const response = await postStartQuiz(gameId, [currentUser.ID, versusUser.ID]);
       if (!response.status) {
         toast.error(response.message);
         return;
@@ -102,6 +111,24 @@ export const QuizHome = () => {
     setIncomingChallenge(false);
     setIsPlaying(false);
     setVersusUser(initialUserInfo);
+  }
+  function switchHandlerQuestions() {
+    setAllQuestions(JSON.parse(messageWS.replace(MESSAGES_WS.QUESTIONS, "")));
+  }
+  function switchHandlerProgress() {
+    setCurrentOpponentProgress(Number(messageWS.replace(MESSAGES_WS.PROGRESS, "")));
+  }
+
+  function handleReset() {
+    setCurrentUser(initialUserInfo);
+    setVersusUser(initialUserInfo);
+    setIsPlaying(false);
+    setCurrentGameId("");
+    setCurrentOpponentProgress(0);
+    setAllUsersActives([]);
+    setIncomingChallenge(false);
+    setAllQuestions([]);
+    setShowUserInfo(false);
   }
 
   return (
@@ -125,7 +152,14 @@ export const QuizHome = () => {
       </div>
 
       {isPlaying ? (
-        <Playing versusUser={versusUser} currentUser={currentUser} allQuestions={allQuestions} />
+        <Playing
+          versusUser={versusUser}
+          currentUser={currentUser}
+          allQuestions={allQuestions}
+          gameId={currentGameId}
+          currentOpponentProgress={currentOpponentProgress}
+          handleReset={handleReset}
+        />
       ) : (
         <NotPlaying
           versusUser={versusUser}

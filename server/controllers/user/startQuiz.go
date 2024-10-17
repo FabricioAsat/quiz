@@ -40,8 +40,9 @@ func StartQuiz(c *fiber.Ctx) error {
 					"error": err.Error(),
 				})
 			}
+			message := "QUESTIONS " + string(questionsJSON)
 
-			if err := conn.WriteMessage(websocket.TextMessage, questionsJSON); err != nil {
+			if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
 				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 					"error": err.Error(),
 				})
