@@ -14,6 +14,12 @@ const initialUserInfo: TUser = {
   Password: "",
   IsActive: false,
 };
+const initialUserResult: TUserResult = {
+  PlayerID: "",
+  Corrects: 0,
+  Wrongs: 0,
+  Time: 0,
+};
 
 export const QuizHome = () => {
   const [allQuestions, setAllQuestions] = useState<TQuestion[]>([]);
@@ -26,6 +32,7 @@ export const QuizHome = () => {
   const [currentGameId, setCurrentGameId] = useState("");
   const [incomingChallenge, setIncomingChallenge] = useState<boolean>(false); // Guardar reto entrante
   const [currentOpponentProgress, setCurrentOpponentProgress] = useState(0);
+  const [oponentResutls, setOponentResutls] = useState<TUserResult>(initialUserResult);
 
   const navigateTo = useNavigate();
 
@@ -73,6 +80,9 @@ export const QuizHome = () => {
       case messageWS.startsWith(MESSAGES_WS.PROGRESS):
         switchHandlerProgress();
         break;
+      case messageWS.startsWith(MESSAGES_WS.RESULTS):
+        switchHandlerResults();
+        break;
       default:
     }
   }, [messageWS]);
@@ -118,6 +128,10 @@ export const QuizHome = () => {
   function switchHandlerProgress() {
     setCurrentOpponentProgress(Number(messageWS.replace(MESSAGES_WS.PROGRESS, "")));
   }
+  function switchHandlerResults() {
+    const jsonResult = messageWS.replace(MESSAGES_WS.RESULTS, "");
+    setOponentResutls(JSON.parse(jsonResult));
+  }
 
   function handleReset() {
     setCurrentUser(initialUserInfo);
@@ -159,6 +173,7 @@ export const QuizHome = () => {
           gameId={currentGameId}
           currentOpponentProgress={currentOpponentProgress}
           handleReset={handleReset}
+          oponentResutls={oponentResutls}
         />
       ) : (
         <NotPlaying

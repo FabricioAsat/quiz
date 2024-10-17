@@ -14,7 +14,7 @@ export const NotPlaying = ({
   setIncomingChallenge: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   function handleChallengeResp(accept: boolean) {
-    if(!currentUser.ID || !versusUser.ID) return;
+    if (!currentUser.ID || !versusUser.ID) return;
     async function request() {
       const response = await postChallengeToResponse(currentUser.ID, versusUser.ID, accept);
 
@@ -37,7 +37,7 @@ export const NotPlaying = ({
       {incomingChallenge && (
         <div className="absolute top-0 left-0 z-50 flex items-center justify-center w-full h-full bg-b-primary/50 animate-fadeIn">
           <div className="flex flex-col items-center justify-center px-10 py-10 bg-t-primary text-b-primary gap-y-5 rounded-xl">
-            <p className="text-2xl font-bold">Someone has challenged you!</p>
+            <p className="text-xl font-bold text-center">Someone has challenged you!</p>
 
             <span className="flex items-center justify-center gap-x-5">
               <button
