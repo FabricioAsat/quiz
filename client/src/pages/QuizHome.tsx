@@ -136,6 +136,7 @@ export const QuizHome = () => {
   function handleReset() {
     setCurrentUser(initialUserInfo);
     setVersusUser(initialUserInfo);
+    setOponentResutls(initialUserResult);
     setIsPlaying(false);
     setCurrentGameId("");
     setCurrentOpponentProgress(0);

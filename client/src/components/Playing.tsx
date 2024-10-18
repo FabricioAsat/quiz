@@ -33,23 +33,15 @@ export const Playing = ({
   const [isVictory, setIsVictory] = useState({ you: false, versus: false, draw: false });
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
+  console.log(currentOpponentProgress + " - " + currentQuestionPosition);
+
   function handleQuestions(answer: string) {
     if (selectedAnswer) return;
-    if (answer === allQuestions[currentQuestionPosition].Answer) {
-      setSelectedAnswer({ selected: answer, isCorrect: true });
-      return;
-    }
-    setSelectedAnswer({ selected: answer, isCorrect: false });
+    setSelectedAnswer({ selected: answer, isCorrect: answer === allQuestions[currentQuestionPosition].Answer });
   }
 
   function handleNextQuestion() {
     if (!selectedAnswer) return;
-
-    if (selectedAnswer?.isCorrect) {
-      setResults({ ...results, Corrects: results.Corrects + 1 });
-    } else {
-      setResults({ ...results, Wrongs: results.Wrongs + 1 });
-    }
 
     async function request() {
       const response = await postNextQuestion(gameId, currentUser.ID, 1 + currentQuestionPosition);
@@ -60,8 +52,8 @@ export const Playing = ({
     }
     request();
 
+    setCurrentQuestionPosition(currentQuestionPosition + 1);
     if (currentQuestionPosition === allQuestions.length - 1) {
-      setCurrentQuestionPosition(currentQuestionPosition + 1);
       setFinish({ ...finish, you: true });
       clearInterval(intervalRef.current);
       async function request() {
@@ -75,7 +67,6 @@ export const Playing = ({
       return;
     }
 
-    setCurrentQuestionPosition(currentQuestionPosition + 1);
     setSelectedAnswer(undefined);
   }
 
@@ -84,7 +75,6 @@ export const Playing = ({
     setSelectedAnswer(undefined);
     setFinish({ ...finish, you: false, versus: false });
     setResults({ ...results, Corrects: 0, Wrongs: 0, Time: 0 });
-    setTimer(0);
     handleReset();
   }
 
@@ -136,37 +126,51 @@ export const Playing = ({
     calculateVictory();
   }, [finish]);
 
+  useEffect(() => {
+    if (!selectedAnswer) return;
+    if (selectedAnswer?.isCorrect) {
+      setResults({ ...results, Corrects: results.Corrects + 1 });
+    } else {
+      setResults({ ...results, Wrongs: results.Wrongs + 1 });
+    }
+  }, [selectedAnswer]);
+
   if (finish.you && finish.versus)
     return (
-      <section className="flex flex-col items-center justify-center w-full h-full pt-20 overflow-y-auto gap-x-10 bg-b-primary/40 gap-y-3">
-        <div className="flex flex-col items-center justify-center w-full gap-10 lg:flex-row gap-y-3">
-          <article className="flex flex-col items-center justify-start w-full max-w-md py-10">
-            <h2 className="text-5xl font-extrabold text-sky-500">
-              {isVictory.draw ? "Draw" : isVictory.you ? "Victory" : "Defeat"}
-            </h2>
-            <h4 className="w-full text-3xl font-bold text-center">{currentUser.Username}</h4>
-            <p className="text-2xl font-bold">Corrects: {results.Corrects}</p>
-            <p className="text-2xl font-bold">Wrongs: {results.Wrongs}</p>
-            <p className="text-2xl font-bold">Time: {timer} seg.</p>
-          </article>
+      <section className="flex flex-col items-center justify-center w-full h-full overflow-y-auto gap-x-10 bg-b-primary/40 gap-y-3 animate-fadeIn">
+        <aside className="flex flex-col items-center justify-center w-full h-full lg:py-10 lg:max-w-4xl lg:h-auto bg-b-primary/75 lg:rounded-xl">
+          <h2 className="text-5xl font-extrabold">Results</h2>
+          <div className="flex flex-col items-center justify-center w-full max-w-4xl gap-10 py-10 lg:flex-row">
+            <article className="flex flex-col items-center justify-start w-full max-w-md gap-y-3">
+              <h2 className="text-3xl font-extrabold">
+                {isVictory.draw ? "Draw" : isVictory.you ? "Victory" : "Defeat"}
+              </h2>
+              <p className="w-full text-2xl font-bold text-center">
+                Username <small className="italic text-t-primary/50">(you)</small>: {currentUser.Username}
+              </p>
+              <p className="text-2xl font-bold text-green-400">Corrects: {results.Corrects}</p>
+              <p className="text-2xl font-bold text-red-400">Wrongs: {results.Wrongs}</p>
+              <p className="text-2xl font-bold text-yellow-400">Time: {timer} seg.</p>
+            </article>
 
-          <article className="flex flex-col items-center justify-start w-full max-w-md py-10">
-            <h2 className="text-5xl font-extrabold text-red-500">
-              {isVictory.draw ? "Draw" : isVictory.versus ? "Victory" : "Defeat"}
-            </h2>
-            <h4 className="w-full text-3xl font-bold text-center">{versusUser.Username}</h4>
-            <p className="text-2xl font-bold">Corrects: {oponentResutls.Corrects}</p>
-            <p className="text-2xl font-bold">Wrongs: {oponentResutls.Wrongs}</p>
-            <p className="text-2xl font-bold">Time: {oponentResutls.Time} seg.</p>
-          </article>
-        </div>
+            <article className="flex flex-col items-center justify-start w-full max-w-md gap-y-3">
+              <h2 className="text-3xl font-extrabold">
+                {isVictory.draw ? "Draw" : isVictory.versus ? "Victory" : "Defeat"}
+              </h2>
+              <p className="w-full text-2xl font-bold text-center">Username: {versusUser.Username}</p>
+              <p className="text-2xl font-bold text-green-400">Corrects: {oponentResutls.Corrects}</p>
+              <p className="text-2xl font-bold text-red-400">Wrongs: {oponentResutls.Wrongs}</p>
+              <p className="text-2xl font-bold text-yellow-400">Time: {oponentResutls.Time} seg.</p>
+            </article>
+          </div>
 
-        <button
-          onClick={handleResetPlaying}
-          className="px-10 py-2 mt-10 text-3xl font-bold text-center rounded-md bg-sky-400"
-        >
-          Go back
-        </button>
+          <button
+            onClick={handleResetPlaying}
+            className={`w-64 py-2 my-5 text-lg font-bold rounded-lg cursor-pointer text-b-primary bg-t-primary transition-all border-x-4 duration-500 hover:brightness-75`}
+          >
+            Go back
+          </button>
+        </aside>
       </section>
     );
 
@@ -229,7 +233,7 @@ export const Playing = ({
           </h3>
         </div>
 
-        <div className="flex flex-col items-center justify-start w-full gap-y-6">
+        <div className="flex flex-col items-center justify-start w-full h-full gap-y-6">
           {allQuestions[currentQuestionPosition].Options.map((answer) => (
             <button
               onClick={() => handleQuestions(answer)}
@@ -249,11 +253,11 @@ export const Playing = ({
             </button>
           ))}
 
-          <div className="flex items-center justify-end w-full max-w-2xl mt-10">
+          <div className="flex items-center justify-end w-full max-w-2xl mt-5">
             <button
               disabled={!selectedAnswer}
               onClick={handleNextQuestion}
-              className="px-10 py-3 font-bold bg-blue-500 text-t-primary rounded-xl"
+              className={`w-64 py-2 my-5 text-lg font-bold rounded-lg cursor-pointer text-b-primary bg-t-primary transition-all border-x-4 duration-500 disabled:cursor-default disabled:brightness-50 enabled:hover:border-x-green-500`}
             >
               Next{" >"}
             </button>
