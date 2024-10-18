@@ -20,7 +20,7 @@
 
 ## 👥 Funcionamiento
 
-Dos jugadores se conectan, reciben las mismas preguntas, y al finalizar el quiz, ambos pueden ver los resultados del otro (respuestas correctas, incorrectas y tiempo). 
+Dos jugadores se conectan, reciben las mismas preguntas, y al finalizar el quiz, ambos pueden ver los resultados del otro (respuestas correctas, incorrectas y tiempo).
 
 Mira el video a continuación para ver una demostración rápida de la creación de usuarios, inicio de sesión y una partida en acción:
 
@@ -32,7 +32,7 @@ Mira el video a continuación para ver una demostración rápida de la creación
 git clone https://github.com/tuusuario/tu-repo.git
 ```
 
-1. Clona este repositorio:
+2. Instala las dependencias del backend y frontend:
 
 ```bash
 cd server
@@ -41,8 +41,8 @@ cd ../client
 npm install
 ```
 
-1. Configura tu base de datos MongoDB y ajusta las variables de entorno.
-2. Ejecuta la aplicación:
-    - Backend: `go run main.go`
-    - Frontend: `npm run dev`
-3. Abre tu navegador y disfruta de la trivia online. 🚀
+3. Configura tu base de datos MongoDB y ajusta las variables de entorno.
+4. Ejecuta la aplicación:
+   - Backend: `go run main.go`
+   - Frontend: `npm run dev`
+5. Abre tu navegador y disfruta de la trivia online. 🚀
